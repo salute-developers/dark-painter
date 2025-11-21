@@ -1,0 +1,26 @@
+export const CONSTANTS = {
+    storagePrefix: 'plasma-dark-theme-painter_',
+    storageActivePrefix: 'plasma_private-dark-theme-painter_active',
+    msgType: {
+        loadStoredThemes: 'load-stored-themes',
+        loadedStoredThemes: 'loaded-stored-themes',
+        selectLightFrame: 'select-light-frame',
+        selectDarkFrame: 'select-dark-frame',
+        clearLightFrame: 'clear-light-frame',
+        clearDarkFrame: 'clear-dark-frame',
+        frameSelected: 'frame-selected',
+        frameCleared: 'frame-cleared',
+        parseTokens: 'parse-tokens-from-frames',
+        parsedTokens: 'tokens-from-frames-parsed',
+        removeTheme: 'remove-theme',
+        themeRemoved: 'theme-removed',
+        getActiveTheme: 'get-active-theme',
+        activeThemeFetched: 'active-theme-fetched',
+        changeActiveTheme: 'change-active-theme',
+        activeThemeChanged: 'active-theme-changed',
+        createDarkClone: 'create-dark-clone',
+        darkCloneCreated: 'dark-clone-created',
+    },
+    pixsoThemeFrameLink: (origin: string, fileKey: string, nodeKey: string) =>
+        `${origin}/app/editor/${fileKey}?item-id=${nodeKey}`,
+};

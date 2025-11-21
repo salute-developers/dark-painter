@@ -1,0 +1,9 @@
+@import '@salutejs/sdds-themes/css/sdds_serv__dark.css';
+
+:root {
+    background-color: var(--background-primary-brightness);
+}
+
+.main-wrapper {
+    padding: 0 var(--spacing-10x) var(--spacing-10x) var(--spacing-10x);
+}

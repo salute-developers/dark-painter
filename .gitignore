@@ -1,0 +1,5 @@
+node_modules/
+.idea/
+.nx/
+**/.DS_Store
+**/.swc
