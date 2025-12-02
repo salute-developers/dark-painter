@@ -4,12 +4,6 @@ export const CONSTANTS = {
     msgType: {
         loadStoredThemes: 'load-stored-themes',
         loadedStoredThemes: 'loaded-stored-themes',
-        selectLightFrame: 'select-light-frame',
-        selectDarkFrame: 'select-dark-frame',
-        clearLightFrame: 'clear-light-frame',
-        clearDarkFrame: 'clear-dark-frame',
-        frameSelected: 'frame-selected',
-        frameCleared: 'frame-cleared',
         parseTokens: 'parse-tokens-from-frames',
         parsedTokens: 'tokens-from-frames-parsed',
         removeTheme: 'remove-theme',
@@ -20,7 +14,7 @@ export const CONSTANTS = {
         activeThemeChanged: 'active-theme-changed',
         createDarkClone: 'create-dark-clone',
         darkCloneCreated: 'dark-clone-created',
+        hasDuplicates: 'frame-has-duplicates',
+        createNew: 'create-new-dark-clone',
     },
-    pixsoThemeFrameLink: (origin: string, fileKey: string, nodeKey: string) =>
-        `${origin}/app/editor/${fileKey}?item-id=${nodeKey}`,
 };

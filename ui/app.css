@@ -4,6 +4,12 @@
     background-color: var(--background-primary-brightness);
 }
 
+body {
+    margin: 0;
+    position: relative;
+
+}
+
 .main-wrapper {
-    padding: 0 var(--spacing-10x) var(--spacing-10x) var(--spacing-10x);
+    padding: 0 var(--spacing-10x) 124px var(--spacing-10x);
 }

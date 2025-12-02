@@ -1,51 +1,14 @@
-import type { ThemeFrames, ThemeFrameType } from 'types';
+import type { TokenNameMap, ThemeValue } from '../types';
 import { CONSTANTS } from './constants';
 
-const traverseFrameForTokens = (node: any, tokens: Map<string, any>, theme: ThemeFrameType) => {
-    if (node.name === 'Token') {
-        if (node.children && Array.isArray(node.children)) {
-            // NOTE: получаем фрейм с цветом (frame.type === Rectangle) и названием (frame.name === textBox)
-            const tokenInfoNode = node.children[0];
-
-            const tokenNameNode = tokenInfoNode.children[1].children[1];
-            const tokenName = tokenNameNode.characters.replace(/🌕|🌑/g, '');
-
-            const prevColorInfo = tokens.get(tokenName);
-
-            const tokenColorNode = tokenInfoNode.children[0];
-            const colorInfo = tokenColorNode.fills;
-
-            const mergedColorInfo = {
-                ...prevColorInfo,
-                [theme]: colorInfo,
-            };
-
-            tokens.set(tokenName, mergedColorInfo);
-
-            return;
-        }
-    }
-
-    // Рекурсивно обходим дочерние элементы
-    if (node.children && Array.isArray(node.children)) {
-        for (const child of node.children) {
-            traverseFrameForTokens(child, tokens, theme);
-        }
-    }
+const smileToThemeMap = {
+    '🌕': 'light',
+    '🌑': 'dark',
 };
 
-export const generateTokenMappings = async (
-    themeFrames: ThemeFrames,
-    tokenMappings: Map<string, any>,
-    themeName: string,
-) => {
+export const generateTokenMappings = async (themeName: string) => {
     if (!themeName) {
         pixso.notify('Задайте имя для темы', { icon: 'INFO' });
-        return;
-    }
-
-    if (!themeFrames.lightFrame || !themeFrames.darkFrame) {
-        pixso.notify('Сначала выберите оба фрейма (светлый и тёмный)', { icon: 'INFO' });
         return;
     }
 
@@ -59,26 +22,44 @@ export const generateTokenMappings = async (
             });
         }
 
-        traverseFrameForTokens(themeFrames.lightFrame, tokenMappings, 'light');
-        traverseFrameForTokens(themeFrames.darkFrame, tokenMappings, 'dark');
+        const localStyles = pixso.getLocalPaintStyles();
 
-        const parsedTokens = Object.fromEntries(tokenMappings);
-        const lightFrameLink = CONSTANTS.pixsoThemeFrameLink(
-            pixso.origin,
-            pixso?.fileKey || '',
-            themeFrames.lightFrame.id,
-        );
-        const darkFrameLink = CONSTANTS.pixsoThemeFrameLink(
-            pixso.origin,
-            pixso?.fileKey || '',
-            themeFrames.darkFrame.id,
-        );
+        const parsedTokens = localStyles.reduce((acc: TokenNameMap, curr: PaintStyle) => {
+            const rawTokenName = curr.name;
+            const moonEmoji = [...rawTokenName][0] || '';
+            const themeValue = smileToThemeMap[moonEmoji as keyof typeof smileToThemeMap] as ThemeValue;
+            const tokenName = rawTokenName.replace(/🌕|🌑/g, '');
 
-        await pixso.clientStorage.setAsync(themeKey, { parsedTokens, lightFrameLink, darkFrameLink });
+            if (!themeValue) {
+                return acc;
+            }
+
+            if (!acc[tokenName]) {
+                acc[tokenName] = {
+                    light: '',
+                    dark: '',
+                };
+            }
+
+            acc[tokenName][themeValue] = String(curr.id);
+
+            return acc;
+        }, {} as TokenNameMap);
+
+        const lightToDarkMap = Object.values(parsedTokens).reduce((acc: Record<string, string>, curr) => {
+            const key = curr.light;
+            const value = curr.dark;
+
+            acc[key] = value;
+
+            return acc;
+        }, {});
+
+        await pixso.clientStorage.setAsync(themeKey, { lightToDarkMap });
 
         pixso.ui.postMessage({ type: CONSTANTS.msgType.parsedTokens });
 
-        pixso.notify(`Создано ${tokenMappings.size} соответствий токенов`, { icon: 'SUCCESS' });
+        pixso.notify(`Создано ${Object.values(lightToDarkMap).length} соответствий токенов`, { icon: 'SUCCESS' });
     } catch (error) {
         console.error('Error generating token mappings:', error);
         pixso.notify('Ошибка парсинга токенов', { error: true });

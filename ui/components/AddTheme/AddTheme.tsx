@@ -5,15 +5,9 @@ import { Button, Flow, TextField } from '@salutejs/sdds-serv';
 import { CONSTANTS } from '../../../utils/constants';
 
 import './AddTheme.styles.css';
-import { ThemeSelection } from './ThemeSelection';
 
 export const AddTheme = () => {
     const [themeName, setThemeName] = useState('');
-
-    const [selectedFrames, setSelectedFrames] = useState({
-        light: '',
-        dark: '',
-    });
 
     const handleChangeName = (e: ChangeEvent<HTMLInputElement>) => {
         setThemeName(e.target.value);
@@ -45,31 +39,9 @@ export const AddTheme = () => {
                 hasRequiredIndicator
             />
 
-            <ThemeSelection
-                label="Светлый фрейм"
-                hintText='Выделите фрейм с токенами светлой темы и нажмите кнопку "Подтвердить выбор".'
-                selectedFrame={selectedFrames.light}
-                currentFrame="light"
-                setSelectedFrames={setSelectedFrames}
-            />
-
-            <ThemeSelection
-                label="Темный фрейм"
-                hintText='Выделите фрейм с токенами темной темы и нажмите кнопку "Подтвердить выбор".'
-                selectedFrame={selectedFrames.dark}
-                currentFrame="dark"
-                setSelectedFrames={setSelectedFrames}
-            />
-
             <div className="frame-selection" style={{ marginTop: '12px' }}>
                 <div />
-                <Button
-                    size="s"
-                    text="Добавить тему"
-                    disabled={!selectedFrames.light || !selectedFrames.dark || !themeName}
-                    onClick={handleParseTokens}
-                    stretch
-                />
+                <Button size="s" text="Добавить тему" disabled={!themeName} onClick={handleParseTokens} stretch />
             </div>
         </Flow>
     );

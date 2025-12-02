@@ -17,15 +17,12 @@ export const ThemeList = ({ activeTheme, loadActiveTheme }: ThemeListProps) => {
     const [themeListLoading, setThemeListLoading] = useState(false);
 
     const getParsedThemes = (storedThemes: any) => {
-        return Object.entries(storedThemes).map(([key, value]) => {
+        return Object.entries(storedThemes).map(([key]) => {
             const themeName = key.replace(CONSTANTS.storagePrefix, '');
-            const { darkFrameLink, lightFrameLink } = value as ParsedTheme;
 
             return {
                 originalName: key,
                 themeName,
-                darkFrameLink,
-                lightFrameLink,
             };
         });
     };
@@ -108,7 +105,7 @@ export const ThemeList = ({ activeTheme, loadActiveTheme }: ThemeListProps) => {
     }
 
     return (
-        <RadioGroup>
+        <RadioGroup style={{ maxHeight: '292px', overflow: 'auto' }}>
             <Flow orientation="vertical" mainAxisGap="20px">
                 {themeList.map((item, ind) => (
                     <ThemeItem

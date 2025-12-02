@@ -1,0 +1,25 @@
+.active-theme {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 20px 20px 28px 20px;
+    background-color: var(--surface-solid-tertiary);
+    box-sizing: border-box;
+    border-radius: var(--border-radius-m) var(--border-radius-m) 0 0;
+    z-index: 99;
+}
+
+.modal-body {
+    display: flex;
+    flex-direction: column;
+    padding: 32px;
+    gap: 16px;
+    background: var(--surface-solid-secondary);
+    border-radius: var(--border-radius-m);
+}
+
+.modal-actions {
+    display: flex;
+    align-items: center;
+}
