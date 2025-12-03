@@ -6,18 +6,30 @@ const findDuplicateFrames = (frameNodeName: string) => {
     return duplicates || [];
 };
 
-const replaceTokensInFrame = (node: any, tokenMappings: Record<string, string>) => {
+const replaceTokensInFrame = async (
+    node: any,
+    tokenMappingsKeys: Record<string, string>,
+    tokenMappingsIds: Record<string, string>,
+) => {
     const fillStyleId = node.fillStyleId;
 
-    if (fillStyleId && tokenMappings?.[fillStyleId]) {
-        node.fillStyleId = tokenMappings[fillStyleId];
+    const currentStyle = pixso.getStyleById(fillStyleId);
+    const remoteKey = currentStyle?.key;
+
+    if (remoteKey && tokenMappingsKeys?.[remoteKey]) {
+        const style = await pixso.importStyleByKeyAsync(tokenMappingsKeys[remoteKey]);
+        node.fillStyleId = style.id;
+    } else if (tokenMappingsIds?.[fillStyleId]) {
+        node.fillStyleId = tokenMappingsIds[fillStyleId];
     }
 
-    // Рекурсивно обходим дочерние элементы
+    const childStyleReplacePromises = [];
     if (node.children && Array.isArray(node.children)) {
         for (const child of node.children) {
-            replaceTokensInFrame(child, tokenMappings);
+            childStyleReplacePromises.push(replaceTokensInFrame(child, tokenMappingsKeys, tokenMappingsIds));
         }
+
+        await Promise.all(childStyleReplacePromises);
     }
 };
 
@@ -65,7 +77,7 @@ export const createDarkClone = async (themeName: string, type?: 'new' | 'replace
     clonedFrame.x = originalFrame.x + originalFrame.width + 100;
     clonedFrame.y = originalFrame.y;
 
-    replaceTokensInFrame(clonedFrame, theme.lightToDarkMap);
+    await replaceTokensInFrame(clonedFrame, theme.lightToDarkMapKeys, theme.lightToDarkMapIds);
 
     pixso.currentPage.appendChild(clonedFrame, false);
     pixso.currentPage.selection = [clonedFrame];

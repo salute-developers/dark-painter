@@ -36,30 +36,48 @@ export const generateTokenMappings = async (themeName: string) => {
 
             if (!acc[tokenName]) {
                 acc[tokenName] = {
-                    light: '',
-                    dark: '',
+                    light: {
+                        id: '',
+                        key: '',
+                    },
+                    dark: {
+                        id: '',
+                        key: '',
+                    },
                 };
             }
 
-            acc[tokenName][themeValue] = String(curr.id);
+            acc[tokenName][themeValue] = {
+                id: String(curr.id),
+                key: String(curr.key),
+            };
 
             return acc;
         }, {} as TokenNameMap);
 
-        const lightToDarkMap = Object.values(parsedTokens).reduce((acc: Record<string, string>, curr) => {
-            const key = curr.light;
-            const value = curr.dark;
+        const lightToDarkMapKeys = Object.values(parsedTokens).reduce((acc: Record<string, string>, curr) => {
+            const key = curr.light.key;
+            const value = curr.dark.key;
 
             acc[key] = value;
 
             return acc;
         }, {});
 
-        await pixso.clientStorage.setAsync(themeKey, { lightToDarkMap });
+        const lightToDarkMapIds = Object.values(parsedTokens).reduce((acc: Record<string, string>, curr) => {
+            const key = curr.light.id;
+            const value = curr.dark.id;
+
+            acc[key] = value;
+
+            return acc;
+        }, {});
+
+        await pixso.clientStorage.setAsync(themeKey, { lightToDarkMapKeys, lightToDarkMapIds });
 
         pixso.ui.postMessage({ type: CONSTANTS.msgType.parsedTokens });
 
-        pixso.notify(`Создано ${Object.values(lightToDarkMap).length} соответствий токенов`, { icon: 'SUCCESS' });
+        pixso.notify(`Создано ${Object.values(lightToDarkMapKeys).length} соответствий токенов`, { icon: 'SUCCESS' });
     } catch (error) {
         console.error('Error generating token mappings:', error);
         pixso.notify('Ошибка парсинга токенов', { error: true });

@@ -3,6 +3,8 @@ import { BodyL, Flow, RadioGroup, RectSkeleton } from '@salutejs/sdds-serv';
 
 import type { ParsedTheme } from 'types';
 
+import './ThemeList.styles.css';
+
 import { CONSTANTS } from '../../../utils/constants';
 import { pixsoEventBus } from '../../helpers/pixso';
 import { ThemeItem } from './ThemeItem';
@@ -105,7 +107,7 @@ export const ThemeList = ({ activeTheme, loadActiveTheme }: ThemeListProps) => {
     }
 
     return (
-        <RadioGroup style={{ maxHeight: '292px', overflow: 'auto' }}>
+        <RadioGroup className="theme-list">
             <Flow orientation="vertical" mainAxisGap="20px">
                 {themeList.map((item, ind) => (
                     <ThemeItem

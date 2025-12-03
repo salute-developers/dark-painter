@@ -11,5 +11,9 @@ export type ParsedTheme = {
 };
 
 export type ThemeValue = 'light' | 'dark';
-type ThemeData = Record<ThemeValue, string>;
+export type StyleInfo = {
+    id: string;
+    key: string;
+};
+type ThemeData = Record<ThemeValue, StyleInfo>;
 export type TokenNameMap = Record<string, ThemeData>;
