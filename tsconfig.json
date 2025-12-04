@@ -39,7 +39,13 @@
     "baseUrl": ".",
     "types": [
       "@pixso/plugin-typings",
-    ]
+      "react",
+      "react-dom"
+    ],
+    "paths": {
+      "types/*": ["./types/*"],
+      "utils/*": ["./utils/*"]
+    }
   },
     "exclude": ["./dist/**"]
 }

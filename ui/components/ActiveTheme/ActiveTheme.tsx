@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Button, ButtonGroup, InformationWrapper, LineSkeleton, Modal, TextL } from '@salutejs/sdds-serv';
+import { CONSTANTS } from 'utils/constants';
 
 import './ActiveTheme.styles.css';
 
-import { CONSTANTS } from '../../../utils/constants';
 import { pixsoEventBus } from '../../helpers/pixso';
 
 type ActiveThemeProps = {

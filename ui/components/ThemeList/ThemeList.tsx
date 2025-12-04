@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { BodyL, Flow, RadioGroup, RectSkeleton } from '@salutejs/sdds-serv';
-
-import type { ParsedTheme } from 'types';
+import { CONSTANTS } from 'utils/constants';
+import type { ParsedTheme, StoredThemes } from 'types';
 
 import './ThemeList.styles.css';
 
-import { CONSTANTS } from '../../../utils/constants';
 import { pixsoEventBus } from '../../helpers/pixso';
 import { ThemeItem } from './ThemeItem';
 
@@ -14,11 +13,16 @@ type ThemeListProps = {
     loadActiveTheme: () => void;
 };
 
+type LoadThemesMessage = {
+    type: string;
+    storedThemes: StoredThemes;
+};
+
 export const ThemeList = ({ activeTheme, loadActiveTheme }: ThemeListProps) => {
     const [themeList, setThemeList] = useState<Array<ParsedTheme>>([]);
     const [themeListLoading, setThemeListLoading] = useState(false);
 
-    const getParsedThemes = (storedThemes: any) => {
+    const getParsedThemes = (storedThemes: LoadThemesMessage['storedThemes']) => {
         return Object.entries(storedThemes).map(([key]) => {
             const themeName = key.replace(CONSTANTS.storagePrefix, '');
 
@@ -29,13 +33,16 @@ export const ThemeList = ({ activeTheme, loadActiveTheme }: ThemeListProps) => {
         });
     };
 
-    const processThemes = (message: any) => {
+    const processThemes = (message: LoadThemesMessage) => {
         const { storedThemes } = message;
         if (Object.keys(storedThemes).length) {
             const parsedThemes = getParsedThemes(storedThemes);
 
             setThemeList(parsedThemes);
+        } else {
+            setThemeList([]);
         }
+
         setThemeListLoading(false);
 
         pixsoEventBus.off(CONSTANTS.msgType.activeThemeFetched, processThemes);
@@ -96,6 +103,7 @@ export const ThemeList = ({ activeTheme, loadActiveTheme }: ThemeListProps) => {
 
     useEffect(() => {
         loadThemes();
+        loadActiveTheme();
     }, []);
 
     if (themeListLoading) {

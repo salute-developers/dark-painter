@@ -1,5 +1,19 @@
 import { ReactNode } from 'react';
 
+export type NodesUnion =
+    | FrameNode
+    | ComponentNode
+    | InstanceNode
+    | BooleanOperationNode
+    | VectorNode
+    | StarNode
+    | LineNode
+    | EllipseNode
+    | PolygonNode
+    | RectangleNode
+    | TextNode
+    | SectionNode;
+
 export type TabThemeContent = {
     new: ReactNode;
     list: ReactNode;
@@ -8,6 +22,13 @@ export type TabThemeContent = {
 export type ParsedTheme = {
     originalName: string;
     themeName: string;
+};
+
+export type StoredThemes = {
+    [name: string]: {
+        lightToDarkMapIds: Record<string, string>;
+        lightToDarkMapKeys: Record<string, string>;
+    };
 };
 
 export type ThemeValue = 'light' | 'dark';

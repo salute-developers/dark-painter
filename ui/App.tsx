@@ -1,12 +1,17 @@
 import React, { useEffect, useState, ComponentProps } from 'react';
 import { Flow, PopupProvider, TabItem, Tabs } from '@salutejs/sdds-serv';
+import { CONSTANTS } from 'utils/constants';
 
 import './app.css';
 
 import { ActiveTheme, AddTheme, ThemeList } from './components';
-import { CONSTANTS } from '../utils/constants';
 import { pixsoEventBus } from './helpers/pixso';
 import { TabThemeContent } from '../types';
+
+type ActiveThemeMessage = {
+    themeName: string;
+    type: string;
+};
 
 const App = ({}) => {
     const [activeTheme, setActiveTheme] = useState('');
@@ -20,7 +25,7 @@ const App = ({}) => {
         onClick: () => setThemeTabValue(tabValue),
     });
 
-    const processActiveTheme = (message: any) => {
+    const processActiveTheme = (message: ActiveThemeMessage) => {
         const { themeName } = message;
         setActiveTheme(themeName || '');
         setIsActiveThemeLoading(false);
@@ -37,7 +42,7 @@ const App = ({}) => {
 
     const ThemeTabContent: TabThemeContent = {
         list: <ThemeList activeTheme={activeTheme} loadActiveTheme={loadActiveTheme} />,
-        new: <AddTheme />,
+        new: <AddTheme setThemeTabValue={setThemeTabValue} />,
     };
 
     useEffect(() => {

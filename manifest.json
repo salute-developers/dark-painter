@@ -3,10 +3,10 @@
   "id": "dark.theme.painter",
   "version": "1.0.0",
   "type": "plugin",
-  "main": "dist/index.js",
-  "ui": "ui.html",
+  "main": "dist/main.js",
+  "ui": "dist/ui.html",
   "manifestVersion": 1,
-  "author": "Your Name",
+  "author": "Salute Frontend Team <salute.developers@gmail.com>",
   "description": "Плагин для перекраски Plasma компонентов в темную тему",
   "icon": "",
   "host": {

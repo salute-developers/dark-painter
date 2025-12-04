@@ -1,3 +1,4 @@
+import { StoredThemes } from 'types';
 import { CONSTANTS } from './constants';
 
 export const loadStoredThemes = async () => {
@@ -8,7 +9,7 @@ export const loadStoredThemes = async () => {
         return;
     }
 
-    const results: { [key: string]: any } = {};
+    const results: { [key: string]: StoredThemes } = {};
     for (const key of themeKeys) {
         results[key] = await pixso.clientStorage.getAsync(key);
     }

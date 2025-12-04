@@ -1,3 +1,4 @@
+import { NodesUnion } from 'types';
 import { CONSTANTS } from './constants';
 
 const findDuplicateFrames = (frameNodeName: string) => {
@@ -7,7 +8,7 @@ const findDuplicateFrames = (frameNodeName: string) => {
 };
 
 const replaceTokensInFrame = async (
-    node: any,
+    node: NodesUnion,
     tokenMappingsKeys: Record<string, string>,
     tokenMappingsIds: Record<string, string>,
 ) => {
@@ -24,7 +25,7 @@ const replaceTokensInFrame = async (
     }
 
     const childStyleReplacePromises = [];
-    if (node.children && Array.isArray(node.children)) {
+    if ('children' in node && node.children && Array.isArray(node.children)) {
         for (const child of node.children) {
             childStyleReplacePromises.push(replaceTokensInFrame(child, tokenMappingsKeys, tokenMappingsIds));
         }
@@ -71,7 +72,7 @@ export const createDarkClone = async (themeName: string, type?: 'new' | 'replace
         }
     }
 
-    const clonedFrame = originalFrame.clone();
+    const clonedFrame = originalFrame.clone() as NodesUnion;
     clonedFrame.name = type === 'new' ? `${darkFrameName}_${new Date().getTime()}` : darkFrameName;
 
     clonedFrame.x = originalFrame.x + originalFrame.width + 100;

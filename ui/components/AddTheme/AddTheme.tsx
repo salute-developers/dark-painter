@@ -1,16 +1,29 @@
-import React, { ChangeEvent, useState } from 'react';
+import React, { useState } from 'react';
+import type { ChangeEvent, Dispatch, SetStateAction } from 'react';
 
 import { Button, Flow, TextField } from '@salutejs/sdds-serv';
-
-import { CONSTANTS } from '../../../utils/constants';
+import { CONSTANTS } from 'utils/constants';
+import type { TabThemeContent } from 'types';
 
 import './AddTheme.styles.css';
+import { pixsoEventBus } from '../../helpers/pixso';
 
-export const AddTheme = () => {
+type AddThemeProps = {
+    setThemeTabValue: Dispatch<SetStateAction<keyof TabThemeContent>>;
+};
+
+export const AddTheme = ({ setThemeTabValue }: AddThemeProps) => {
     const [themeName, setThemeName] = useState('');
 
     const handleChangeName = (e: ChangeEvent<HTMLInputElement>) => {
         setThemeName(e.target.value);
+    };
+
+    const processParsedTokens = () => {
+        setThemeName('');
+        setThemeTabValue('list');
+
+        pixsoEventBus.off(CONSTANTS.msgType.parsedTokens, processParsedTokens);
     };
 
     const handleParseTokens = () => {
@@ -25,6 +38,8 @@ export const AddTheme = () => {
             },
             '*',
         );
+
+        pixsoEventBus.on(CONSTANTS.msgType.parsedTokens, processParsedTokens);
     };
 
     return (
