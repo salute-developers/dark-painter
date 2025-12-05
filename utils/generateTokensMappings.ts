@@ -73,16 +73,17 @@ export const generateTokenMappings = async (themeName: string) => {
             return acc;
         }, {});
 
-        const themeInfo = JSON.stringify({ lightToDarkMapKeys, lightToDarkMapIds });
-
         try {
-            await pixso.serverStorage.setAsync(themeKey, themeInfo);
+            await pixso.clientStorage.setAsync(themeKey, { lightToDarkMapKeys, lightToDarkMapIds });
             await pixso.clientStorage.setAsync(CONSTANTS.storageActivePrefix, themeKey);
         } catch (e) {
-            console.log(e);
+            console.error(e);
         }
 
-        pixso.ui.postMessage({ type: CONSTANTS.msgType.parsedTokens });
+        pixso.ui.postMessage({
+            type: CONSTANTS.msgType.parsedTokens,
+            data: JSON.stringify({ [themeKey]: { lightToDarkMapKeys, lightToDarkMapIds } }, null, 2),
+        });
 
         pixso.notify(`Создано ${Object.values(lightToDarkMapKeys).length} соответствий токенов`, { icon: 'SUCCESS' });
     } catch (error) {

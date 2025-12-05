@@ -49,7 +49,8 @@ export const createDarkClone = async (themeName: string, type?: 'new' | 'replace
         return;
     }
 
-    const theme = await pixso.clientStorage.getAsync(themeName);
+    const rawTheme = await pixso.serverStorage.getAsync(themeName);
+    const theme = JSON.parse(rawTheme);
 
     if (!theme) {
         pixso.notify('Похоже, что темы не существует. Попробуйте создать новую', { icon: 'WARN' });
