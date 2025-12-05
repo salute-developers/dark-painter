@@ -73,8 +73,14 @@ export const generateTokenMappings = async (themeName: string) => {
             return acc;
         }, {});
 
-        await pixso.clientStorage.setAsync(themeKey, { lightToDarkMapKeys, lightToDarkMapIds });
-        await pixso.clientStorage.setAsync(CONSTANTS.storageActivePrefix, themeKey);
+        const themeInfo = JSON.stringify({ lightToDarkMapKeys, lightToDarkMapIds });
+
+        try {
+            await pixso.serverStorage.setAsync(themeKey, themeInfo);
+            await pixso.clientStorage.setAsync(CONSTANTS.storageActivePrefix, themeKey);
+        } catch (e) {
+            console.log(e);
+        }
 
         pixso.ui.postMessage({ type: CONSTANTS.msgType.parsedTokens });
 

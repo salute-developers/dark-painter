@@ -1,7 +1,7 @@
 import { CONSTANTS } from './constants';
 
 export const removeTheme = async (themeName: string) => {
-    await pixso.clientStorage.deleteAsync(themeName);
+    await pixso.serverStorage.deleteAsync(themeName);
 
     const currentActive = await pixso.clientStorage.getAsync(CONSTANTS.storageActivePrefix);
     if (currentActive === themeName) {

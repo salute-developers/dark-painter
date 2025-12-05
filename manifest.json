@@ -1,6 +1,6 @@
 {
   "name": "Dark theme painter",
-  "id": "dark.theme.painter",
+  "id": "dark_theme_painter",
   "version": "1.0.0",
   "type": "plugin",
   "main": "dist/main.js",

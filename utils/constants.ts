@@ -1,6 +1,6 @@
 export const CONSTANTS = {
-    storagePrefix: 'plasma-dark-theme-painter_',
-    storageActivePrefix: 'plasma_private-dark-theme-painter_active',
+    storagePrefix: 'plasma_dark_theme_painter_',
+    storageActivePrefix: 'plasma_private_dark_theme_painter_active',
     msgType: {
         loadStoredThemes: 'load-stored-themes',
         loadedStoredThemes: 'loaded-stored-themes',
