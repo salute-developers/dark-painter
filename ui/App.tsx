@@ -1,12 +1,12 @@
 import React, { useEffect, useState, ComponentProps } from 'react';
 import { Flow, PopupProvider, TabItem, Tabs } from '@salutejs/sdds-serv';
 import { CONSTANTS } from 'utils/constants';
+import type { StoredThemes, TabThemeContent } from 'types';
 
 import './app.css';
 
-import { ActiveTheme, AddTheme, ThemeList } from './components';
+import { ActiveTheme, ThemeList } from './components';
 import { pixsoEventBus } from './helpers/pixso';
-import { TabThemeContent } from '../types';
 
 type ActiveThemeMessage = {
     themeName: string;
@@ -16,6 +16,7 @@ type ActiveThemeMessage = {
 const App = ({}) => {
     const [activeTheme, setActiveTheme] = useState('');
     const [isActiveThemeLoading, setIsActiveThemeLoading] = useState(false);
+    const [originalThemeList, setOriginalThemeList] = useState<StoredThemes>({});
     const [themeTabValue, setThemeTabValue] = useState<keyof TabThemeContent>('list');
 
     const themeTabProps = (tabValue: 'new' | 'list') => ({
@@ -41,8 +42,15 @@ const App = ({}) => {
     };
 
     const ThemeTabContent: TabThemeContent = {
-        list: <ThemeList activeTheme={activeTheme} loadActiveTheme={loadActiveTheme} />,
-        new: <AddTheme setThemeTabValue={setThemeTabValue} />,
+        list: (
+            <ThemeList
+                activeTheme={activeTheme}
+                loadActiveTheme={loadActiveTheme}
+                originalThemeList={originalThemeList}
+                setOriginalThemeList={setOriginalThemeList}
+            />
+        ),
+        // new: <AddTheme setThemeTabValue={setThemeTabValue} />,
     };
 
     useEffect(() => {
@@ -54,12 +62,16 @@ const App = ({}) => {
             <Flow orientation="vertical" mainAxisGap="16px" className="main-wrapper">
                 <Tabs view="divider" size="m" stretch>
                     <TabItem {...themeTabProps('list')}>Список тем</TabItem>
-                    <TabItem {...themeTabProps('new')}>Добавить тему</TabItem>
+                    {/* <TabItem {...themeTabProps('new')}>Добавить тему</TabItem> */}
                 </Tabs>
 
                 {ThemeTabContent[themeTabValue]}
 
-                <ActiveTheme activeTheme={activeTheme} isActiveThemeLoading={isActiveThemeLoading} />
+                <ActiveTheme
+                    themes={originalThemeList}
+                    activeTheme={activeTheme}
+                    isActiveThemeLoading={isActiveThemeLoading}
+                />
             </Flow>
         </PopupProvider>
     );

@@ -1,21 +1,26 @@
-import { StoredThemes } from 'types';
-import { CONSTANTS } from './constants';
+import type { StoredThemes } from 'types';
 
-export const loadStoredThemes = async () => {
-    const clientKeys = await pixso.clientStorage.keysAsync();
-    const themeKeys = clientKeys.filter((key) => key.startsWith(CONSTANTS.storagePrefix));
-
-    if (!themeKeys) {
+export const loadStoredThemes = async (themes: StoredThemes) => {
+    if (!Object.keys(themes)) {
         return;
     }
 
-    const results: { [key: string]: StoredThemes } = {};
-    for (const key of themeKeys) {
-        results[key] = await pixso.clientStorage.getAsync(key);
+    try {
+        const setClientStoragePromises = Object.entries(themes).map(([themeName, themeInfo]) => {
+            return pixso.clientStorage.setAsync(themeName, themeInfo);
+        });
+
+        await Promise.all(setClientStoragePromises);
+    } catch (e) {
+        console.error(e);
+        pixso.notify('Ошибка при загрузке тем', {
+            icon: 'WARN',
+        });
+
+        return;
     }
 
-    pixso.ui.postMessage({
-        type: CONSTANTS.msgType.loadedStoredThemes,
-        storedThemes: results,
+    pixso.notify('Темы загружены', {
+        icon: 'SUCCESS',
     });
 };

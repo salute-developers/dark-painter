@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Button, ButtonGroup, InformationWrapper, LineSkeleton, Modal, TextL } from '@salutejs/sdds-serv';
+import type { StoredThemes } from 'types';
 import { CONSTANTS } from 'utils/constants';
 
 import './ActiveTheme.styles.css';
@@ -9,9 +10,10 @@ import { pixsoEventBus } from '../../helpers/pixso';
 type ActiveThemeProps = {
     isActiveThemeLoading: boolean;
     activeTheme: string;
+    themes: StoredThemes;
 };
 
-export const ActiveTheme = ({ isActiveThemeLoading, activeTheme }: ActiveThemeProps) => {
+export const ActiveTheme = ({ isActiveThemeLoading, activeTheme, themes }: ActiveThemeProps) => {
     const [isThemeGenerating, setIsThemeGenerating] = useState(false);
     const [isDuplicateModalOpen, setIsDuplicateModalOpen] = useState(false);
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { BodyL, Button, Flow, RadioGroup, RectSkeleton } from '@salutejs/sdds-serv';
 import { CONSTANTS } from 'utils/constants';
 import type { ParsedTheme, StoredThemes } from 'types';
@@ -11,6 +11,8 @@ import { ThemeItem } from './ThemeItem';
 type ThemeListProps = {
     activeTheme: string;
     loadActiveTheme: () => void;
+    originalThemeList: StoredThemes;
+    setOriginalThemeList: Dispatch<SetStateAction<StoredThemes>>;
 };
 
 type LoadThemesMessage = {
@@ -18,13 +20,17 @@ type LoadThemesMessage = {
     storedThemes: StoredThemes;
 };
 
-export const ThemeList = ({ activeTheme, loadActiveTheme }: ThemeListProps) => {
+export const ThemeList = ({
+    activeTheme,
+    originalThemeList,
+    loadActiveTheme,
+    setOriginalThemeList,
+}: ThemeListProps) => {
     const [themeList, setThemeList] = useState<Array<ParsedTheme>>([]);
-    const [originalThemeList, setOriginalThemeList] = useState<StoredThemes>({});
     const [themeListLoading, setThemeListLoading] = useState(false);
 
     const getParsedThemes = (storedThemes: LoadThemesMessage['storedThemes']) => {
-        return Object.entries(storedThemes).map(([key, value]) => {
+        return Object.entries(storedThemes).map(([key]) => {
             const themeName = key.replace(CONSTANTS.storagePrefix, '');
 
             return {
@@ -50,12 +56,31 @@ export const ThemeList = ({ activeTheme, loadActiveTheme }: ThemeListProps) => {
         pixsoEventBus.off(CONSTANTS.msgType.activeThemeFetched, processThemes);
     };
 
-    const loadThemes = () => {
-        setThemeListLoading(true);
+    const loadThemes = async () => {
+        try {
+            setThemeListLoading(true);
 
-        parent.postMessage({ pluginMessage: { type: CONSTANTS.msgType.loadStoredThemes } }, '*');
+            const response = await fetch(CONSTANTS.repoUrl);
 
-        pixsoEventBus.on(CONSTANTS.msgType.loadedStoredThemes, processThemes);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            const decodedContent = atob(data.content);
+            const jsonData = JSON.parse(decodedContent);
+
+            processThemes({ storedThemes: jsonData } as LoadThemesMessage);
+            parent.postMessage(
+                { pluginMessage: { type: CONSTANTS.msgType.loadStoredThemes, data: { storedThemes: jsonData } } },
+                '*',
+            );
+        } catch (err) {
+            console.error('Error fetching theme:', err);
+        } finally {
+            setThemeListLoading(false);
+        }
     };
 
     const processActiveThemeChange = () => {
@@ -103,22 +128,22 @@ export const ThemeList = ({ activeTheme, loadActiveTheme }: ThemeListProps) => {
         pixsoEventBus.on(CONSTANTS.msgType.themeRemoved, processDeleteTheme);
     };
 
-    const downloadThemes = () => {
-        const data = JSON.stringify(originalThemeList, null, 2);
-        const blob = new Blob([data], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
+    // const downloadThemes = () => {
+    //     const data = JSON.stringify(originalThemeList, null, 2);
+    //     const blob = new Blob([data], { type: 'application/json' });
+    //     const url = URL.createObjectURL(blob);
+    //     const a = document.createElement('a');
 
-        a.href = url;
-        a.download = `themes.json`;
-        document.body.appendChild(a);
-        a.click();
+    //     a.href = url;
+    //     a.download = `themes.json`;
+    //     document.body.appendChild(a);
+    //     a.click();
 
-        setTimeout(() => {
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-        }, 100);
-    };
+    //     setTimeout(() => {
+    //         document.body.removeChild(a);
+    //         URL.revokeObjectURL(url);
+    //     }, 100);
+    // };
 
     useEffect(() => {
         loadThemes();
@@ -148,7 +173,7 @@ export const ThemeList = ({ activeTheme, loadActiveTheme }: ThemeListProps) => {
                     ))}
                 </Flow>
             </RadioGroup>
-            <Button view="success" size="xs" text="Скачать темы" onClick={downloadThemes} />
+            {/* <Button view="success" size="xs" text="Скачать темы" onClick={downloadThemes} /> */}
         </>
     );
 };

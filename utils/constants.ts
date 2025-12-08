@@ -1,6 +1,7 @@
 export const CONSTANTS = {
     storagePrefix: 'plasma_dark_theme_painter_',
     storageActivePrefix: 'plasma_private_dark_theme_painter_active',
+    repoUrl: 'https://api.github.com/repos/salute-developers/dark-painter/contents/themes.json',
     msgType: {
         loadStoredThemes: 'load-stored-themes',
         loadedStoredThemes: 'loaded-stored-themes',

@@ -14,7 +14,7 @@ pixso.showUI(__html__, {
 pixso.ui.onmessage = async (msg) => {
     switch (msg.type) {
         case CONSTANTS.msgType.loadStoredThemes:
-            loadStoredThemes();
+            loadStoredThemes(msg?.data?.storedThemes);
             break;
 
         case CONSTANTS.msgType.removeTheme:

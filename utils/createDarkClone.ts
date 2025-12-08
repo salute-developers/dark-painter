@@ -35,56 +35,60 @@ const replaceTokensInFrame = async (
 };
 
 export const createDarkClone = async (themeName: string, type?: 'new' | 'replace') => {
-    const selection = pixso.currentPage.selection;
+    try {
+        const selection = pixso.currentPage.selection;
 
-    if (selection.length === 0) {
-        pixso.notify('Сначала выделите фрейм с который нужно перекрасить в темную тему', {
-            icon: 'WARN',
-        });
-        return;
-    }
-
-    if (selection.length > 1) {
-        pixso.notify('Выделите только один фрейм', { icon: 'WARN' });
-        return;
-    }
-
-    const rawTheme = await pixso.serverStorage.getAsync(themeName);
-    const theme = JSON.parse(rawTheme);
-
-    if (!theme) {
-        pixso.notify('Похоже, что темы не существует. Попробуйте создать новую', { icon: 'WARN' });
-    }
-
-    const originalFrame = selection[0];
-    const darkFrameName = `DARK_${originalFrame.name}`;
-
-    const duplicatesNodes = findDuplicateFrames(darkFrameName);
-    if (duplicatesNodes?.length > 0) {
-        if (!type) {
-            pixso.ui.postMessage({
-                type: CONSTANTS.msgType.hasDuplicates,
+        if (selection.length === 0) {
+            pixso.notify('Сначала выделите фрейм с который нужно перекрасить в темную тему', {
+                icon: 'WARN',
             });
             return;
         }
 
-        if (type === 'replace') {
-            duplicatesNodes[0].remove();
+        if (selection.length > 1) {
+            pixso.notify('Выделите только один фрейм', { icon: 'WARN' });
+            return;
         }
+
+        const theme = await pixso.clientStorage.getAsync(themeName);
+
+        if (!theme) {
+            pixso.notify('Похоже, что темы не существует. Попробуйте создать новую', { icon: 'WARN' });
+        }
+
+        const originalFrame = selection[0];
+        const darkFrameName = `DARK_${originalFrame.name}`;
+
+        const duplicatesNodes = findDuplicateFrames(darkFrameName);
+        if (duplicatesNodes?.length > 0) {
+            if (!type) {
+                pixso.ui.postMessage({
+                    type: CONSTANTS.msgType.hasDuplicates,
+                });
+                return;
+            }
+
+            if (type === 'replace') {
+                duplicatesNodes[0].remove();
+            }
+        }
+
+        const clonedFrame = originalFrame.clone() as NodesUnion;
+        clonedFrame.name = type === 'new' ? `${darkFrameName}_${new Date().getTime()}` : darkFrameName;
+
+        clonedFrame.x = originalFrame.x + originalFrame.width + 100;
+        clonedFrame.y = originalFrame.y;
+
+        await replaceTokensInFrame(clonedFrame, theme.lightToDarkMapKeys, theme.lightToDarkMapIds);
+
+        pixso.currentPage.appendChild(clonedFrame, false);
+        pixso.currentPage.selection = [clonedFrame];
+
+        pixso.notify(`Фрейм с именем ${darkFrameName} создан`, { icon: 'SUCCESS' });
+    } catch (error) {
+        console.error(error);
+        pixso.notify('Ошибка при создании темного клона', { icon: 'WARN' });
     }
-
-    const clonedFrame = originalFrame.clone() as NodesUnion;
-    clonedFrame.name = type === 'new' ? `${darkFrameName}_${new Date().getTime()}` : darkFrameName;
-
-    clonedFrame.x = originalFrame.x + originalFrame.width + 100;
-    clonedFrame.y = originalFrame.y;
-
-    await replaceTokensInFrame(clonedFrame, theme.lightToDarkMapKeys, theme.lightToDarkMapIds);
-
-    pixso.currentPage.appendChild(clonedFrame, false);
-    pixso.currentPage.selection = [clonedFrame];
-
-    pixso.notify(`Фрейм с именем ${darkFrameName} создан`, { icon: 'SUCCESS' });
 
     pixso.ui.postMessage({
         type: CONSTANTS.msgType.darkCloneCreated,

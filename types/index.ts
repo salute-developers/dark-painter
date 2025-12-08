@@ -15,7 +15,7 @@ export type NodesUnion =
     | SectionNode;
 
 export type TabThemeContent = {
-    new: ReactNode;
+    new?: ReactNode;
     list: ReactNode;
 };
 
