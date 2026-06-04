@@ -63,17 +63,15 @@ export const ThemeList = ({
             const response = await fetch(CONSTANTS.repoUrl);
 
             if (!response.ok) {
+                console.error(response);
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
             const data = await response.json();
 
-            const decodedContent = atob(data.content);
-            const jsonData = JSON.parse(decodedContent);
-
-            processThemes({ storedThemes: jsonData } as LoadThemesMessage);
+            processThemes({ storedThemes: data } as LoadThemesMessage);
             parent.postMessage(
-                { pluginMessage: { type: CONSTANTS.msgType.loadStoredThemes, data: { storedThemes: jsonData } } },
+                { pluginMessage: { type: CONSTANTS.msgType.loadStoredThemes, data: { storedThemes: data } } },
                 '*',
             );
         } catch (err) {
